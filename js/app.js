@@ -5,8 +5,12 @@ const listaCursos = document.querySelector('#lista-cursos')
 const vaciarCarritoBtn = document.querySelector("#vaciar-carrito")
 let articulosCarrito = []
 
+
 cargarEventListeners()
 function cargarEventListeners(){
+
+  // Muestra los cursos de LS 
+  document.addEventListener('DOMContentLoaded',cargarLS)
   // Cuando agregas un curso presionando agregar al carrito
   listaCursos.addEventListener('click', agregarCurso)
 
@@ -31,11 +35,13 @@ function eliminarCurso(e){
   if(e.target.classList.contains("borrar-curso")){
     const cursoId = e.target.getAttribute('data-id')
     articulosCarrito = articulosCarrito.filter( curso => cursoId !== curso.id )
+    sincronizarLS()
     carritoHTML()
   }
 }
 function vaciaCarrito(e){
   articulosCarrito = []
+  sincronizarLS()
   carritoHTML()
 }
 // Lee el contenido del HTML al que le dimos click y extrae informacion del curso
@@ -68,13 +74,14 @@ function agregarCarrito(infoCurso){
   }else{
     articulosCarrito = [...articulosCarrito, infoCurso]
   }
+  sincronizarLS()
   carritoHTML()
 }
 // Muestra el carrito de compras  en el HTML
 function carritoHTML(){
   // Limpiar HTML
   limpiarHTML()
-  // Recore carrito y genera HTML
+  // Recorre carrito y genera HTML
   articulosCarrito.forEach(( curso ) => { 
     const { imagen, titulo, precio, cantidad, id } = curso
     const row = document.createElement('tr')
@@ -99,4 +106,13 @@ function limpiarHTML ( ) {
   while(contenedorCarrito.firstChild){
     contenedorCarrito.removeChild(contenedorCarrito.firstChild)
   }
+}
+// Sincronizar LS
+function sincronizarLS(){
+  localStorage.setItem('carrito', (JSON.stringify(articulosCarrito)))
+}
+// Cargar LS
+function cargarLS(){
+  articulosCarrito = JSON.parse(localStorage.getItem("carrito")) || []
+  carritoHTML()
 }
